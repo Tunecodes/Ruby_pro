@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Game
   def initialize
     @board = Array.new(3) { Array.new(3, ' ') }
@@ -43,7 +45,7 @@ class Game
 end
 
 class Players
-  def initialize(board)git remote add origin https://github.com/Tunecodes/Ruby_pro.git
+  def initialize(board)
     @board = board
   end
 
