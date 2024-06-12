@@ -1,11 +1,19 @@
 # frozen_string_literal: true
-
+require_relative 'playerGusses'
 class Mastermind
   COLORS = %w[red blue green yellow orange purple].freeze
 
   def initialize(code_length = 4)
     @code_length = code_length
     @secret_code = generate_secret_code
+  end
+
+  def player_code
+    array = Array.new(4)
+    array.each_index do |i|
+      array[i] = gets.chomp
+    end
+    
   end
 
   def generate_secret_code
@@ -16,10 +24,18 @@ class Mastermind
     puts "Secret code: #{@secret_code.join(', ')}"
   end
 
-  def play
-    play = Gusses.new(@secret_code)
+  def display
+    @player_code = player_code
 
-    3.times do |i|
+    computer = ComputerGuess.new(@player_code)
+    12.times do
+    computer.compare_guess
+    end
+  end
+
+  def play
+    play = PlayerGusses.new(@secret_code)
+    12.times do |i|
       if play.pin == 4
         puts 'You won!'
         break
@@ -30,37 +46,46 @@ class Mastermind
   end
 end
 
-class Gusses
-  def initialize(secret_code)
-    @secret_code = secret_code
-    @guess = prompt_user
+
+class ComputerGuess
+  COLORS = %w[red blue green yellow orange purple].freeze
+
+
+  def initialize(player_code)
+    @player_code = player_code
+    @computer_guess = Array.new(4) {COLORS.sample}
+
   end
 
-  def prompt_user
-    guess = Array.new(4) do |index|
-      puts "Enter guess #{index + 1}: "
-      gets.chomp
+  def compare_guess
+    @computer_guess.each_with_index do |color, index|
+      if @player_code.include?(color)
+      end
+      if color == @player_code[index]
+        @computer_guess[index] = color
+      else
+        @computer_guess[index] = nil
+      end
+      @computer_guess.map! { |element| element.nil? ? COLORS.sample : element }
     end
-    @guess = guess
+    puts @computer_guess.inspect
   end
 
-  def pin
-    correct_positions = 0
-    right_color = @guess.count { |color| @secret_code.include?(color) }
-    @guess.each_with_index do |color, index|
-      correct_positions += 1 if color == @secret_code[index]
-    end
-    white_pin = right_color - correct_positions
+  def white_pin
 
-    puts "#{white_pin} white pins = right color wrong positions"
-    puts "#{correct_positions} black pins = right color and positions"
-    correct_positions
   end
 end
 
-# Example usage
-game = Mastermind.new
-game.display_secret_code
 
+# Example usage
+
+print "pick: "
+choice = gets.chomp
+
+game = Mastermind.new
+
+if choice == "1"
+game.display
+elsif choice == "2"
 game.play
-game.display_secret_code
+end
